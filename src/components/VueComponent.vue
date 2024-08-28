@@ -1,6 +1,7 @@
 <template>
     <div class="panel">
         <h1>{{ currentSectionIndex }}</h1>
+        <button @click="logg">logg</button>
     </div>
 </template>
 
@@ -12,15 +13,15 @@ const message = ref('Hello Vue 3!')
 const isScrolling = ref(false)
 const sections = document.querySelectorAll('.section');
 const innerSections = Array(...sections)
-const animationDuration = 400; // Duration in milliseconds
-const easingFunction = 'cubicBezier(.9,0,0,1)'; // Anime.js easing function
+const animationDuration = 600; // Duration in milliseconds
+const easingFunction = 'cubicBezier(.4,0,0,1)'; // Anime.js easing function
 const sectionHeightIn = 80; // Height of each section in vh
 const sectionWidthIn = 80; // Width of each section in vw
 const sectionHeightOut = 20; // Height of each section in vh
 const sectionWidthOut = 20; // Width of each section in vw
 const zIn = 0;
 const zDisplacement = 50;
-const verticalDisplacement = 60
+const verticalDisplacement = 100
 
 
 
@@ -44,6 +45,11 @@ function scrollToSection(index) {
             if (i < index) return -zDisplacement * (index - i) + 'px';
             if (i === index) return '0' + 'px';
             return zDisplacement * (i - index) + 'px';
+        },
+        scale: (el, i) => {
+            if (i < index) return sectionWidthOut / sectionWidthIn;
+            if (i === index) return '1';
+            return sectionWidthOut / sectionWidthIn;
         },
         // rotateX: 5,
         // rotateY: 5,
@@ -117,6 +123,10 @@ onMounted(() => {
     document.addEventListener('DOMContentLoaded', () => { })
 
 });
+
+const logg = () => {
+    console.log('logg')
+}
 
 </script>
 

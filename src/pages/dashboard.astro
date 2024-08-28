@@ -1,0 +1,53 @@
+---
+export const prerender = false;
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+const { cookies, redirect } = Astro;
+
+const accessToken = cookies.get('sb-access-token');
+const refreshToken = cookies.get('sb-refresh-token');
+
+if (!accessToken || !refreshToken) {
+  return redirect('/signin');
+}
+
+const { data, error } = await supabase.auth.setSession({
+  refresh_token: refreshToken.value,
+  access_token: accessToken.value,
+});
+
+if (error) {
+  cookies.delete('sb-access-token', { path: '/' });
+  cookies.delete('sb-refresh-token', { path: '/' });
+  return redirect('/signin');
+}
+
+const email = data.user?.email;
+---
+
+<Layout title="dashboard">
+  <div class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm: -md">
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Welcome {email}
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">We are happy to see you here</p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm: -md">
+      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <form action="/api/auth/signout" class="space-y-6">
+          <div>
+            <button
+              type="submit"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Sign out
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</Layout>

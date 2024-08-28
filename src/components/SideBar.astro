@@ -1,0 +1,28 @@
+---
+export const prerender = false;
+const navItems = [{ name: 'Home', href: '/' }];
+
+// You would typically get this from your auth service
+const isLoggedIn = false;
+// get sessions from api endpoint
+const sessions = [];
+const baseURL = new URL(Astro.request.url).origin;
+const response = await fetch(`${baseURL}/api/session/get`);
+const data = await response.json();
+---
+
+<nav class="bg-white shadow-lg">
+  <!-- an item for each nav item -->
+  {
+    navItems.map((item) => (
+      <a href class="block px-4 py-2 text-gray-800 hover:bg-gray-100" href={item.href}>
+        {item.name}
+      </a>
+    ))
+  }
+
+  <div>sidebar</div>
+  <div>{data.message}</div>
+</nav>
+
+<script></script>

@@ -1,21 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
 import Section from '../components/Section.astro';
 import VueComponent from '../components/VueComponent.vue';
+import SvgWrapper from '../components/SvgWrapper.vue';
 ---
 
 <Layout title="Welcome to Astro.">
   <main>
     <VueComponent client:only="vue" />
-    <Section bg="bg-orange-50" text="it Simple." />
-    <Section bg="bg-blue-50" text="Contact us" />
+    <Section bg="bg-orange-50" text="it Simple.">
+      <div>
+        <SvgWrapper client:only="vue" numOfSvgs={6} />
+      </div>
+    </Section>
+    <Section bg="bg-orange-500" text="it Simple.">
+      <div>
+        <SvgWrapper client:only="vue" numOfSvgs={6} />
+      </div>
+    </Section>
+    <!-- <Section bg="bg-blue-50" text="Contact us" />
     <Section bg="bg-red-50" text="it Simple." />
     <Section bg="bg-teal-50" text="Contact us" />
     <Section bg="bg-pink-50" text="it Simple." />
     <Section bg="bg-lime-50" text="Contact us" />
     <Section bg="bg-sky-50" text="it Simple." />
-    <Section bg="bg-emerald-50" text="Contact us" />
+    <Section bg="bg-emerald-50" text="Contact us" /> -->
   </main>
 </Layout>
 

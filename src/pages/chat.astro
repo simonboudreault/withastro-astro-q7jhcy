@@ -1,0 +1,68 @@
+---
+export const prerender = false;
+import Layout from '../layouts/Layout.astro';
+import ChatComponent from '../components/ChatComponent.vue';
+import { supabase } from '../lib/supabase';
+import hljs from 'highlight.js/lib/core';
+// import 'highlight.js/styles/monokai-sublime.css';
+import 'highlight.js/styles/night-owl.css'; // or any other style you prefer
+import javascript from 'highlight.js/lib/languages/javascript';
+
+// Then register the languages you need
+hljs.registerLanguage('javascript', javascript);
+
+const { cookies, redirect } = Astro;
+
+const accessToken = cookies.get('sb-access-token');
+const refreshToken = cookies.get('sb-refresh-token');
+
+if (!accessToken || !refreshToken) {
+  return redirect('/signin');
+}
+
+const { data, error } = await supabase.auth.setSession({
+  refresh_token: refreshToken.value,
+  access_token: accessToken.value,
+});
+
+if (error) {
+  cookies.delete('sb-access-token', {
+    path: '/',
+  });
+  cookies.delete('sb-refresh-token', {
+    path: '/',
+  });
+
+  return redirect('/signin');
+}
+
+const email = data.user?.email;
+---
+
+<Layout title="Chat">
+  <div
+    class="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+  >
+    <div class="-xl w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Chat</h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          Logged in as: <span class="font-medium text-indigo-600">{email}</span>
+        </p>
+      </div>
+
+      <div class="mt-8 space-y-6">
+        <ChatComponent client:only="vue" />
+
+        <form action="/api/auth/signout" class="mt-6">
+          <button
+            type="submit"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Sign out
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</Layout>
