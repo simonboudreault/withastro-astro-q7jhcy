@@ -19,8 +19,6 @@ const apiEndpoints = {
     anthropic: 'http://localhost:3000/anthropic'
 };
 
-"Of course! What kind of list do you need? Here are a few examples to get you started:\n\n1. Grocery list\n2. To-do list\n3. Travel packing list\n4. Book recommendations\n5. Movie recommendations\n\nJust let me know what you're looking for, and I'll help you create the perfect list!"
-
 const currentApiEndpoint = computed(() => apiEndpoints[selectedApi.value]);
 
 const toggleDropdown = () => {
@@ -168,38 +166,15 @@ const formatMessage3 = (content) => {
     return parts;
 };
 const formatMessage4 = (content) => {
-    console.log('format 4')
-    const listPattern = /(?:^|\n)(\d+\.\s.*|[-*]\s.*)/g;
     const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
     const boldPattern = /\*\*(.*?)\*\*/g;
     const italicPattern = /\*(.*?)\*/g;
     const linkPattern = /\[(.*?)\]\((.*?)\)/g;
 
+
     let lastIndex = 0;
     const parts = [];
-    // return [{ type: 'text', content: content }]
-    let listCounter = 1;
-
-    "Certainly! Here is the same answer again:\n\n### Grocery List:\n\n1. Apples\n2. Bananas\n3. Carrots\n4. Donuts\n5. Eggs\n\n### JavaScript Function\n\nHere's a JavaScript function that takes in a grocery list array and prints each item:\n\n```javascript\n// Define the grocery list array\nconst groceryList = ['Apples', 'Bananas', 'Carrots', 'Donuts', 'Eggs'];\n\n// Function to print each item in the grocery list\nfunction printGroceryList(list) {\n    console.log(\"Grocery List:\");\n    list.forEach((item, index) => {\n        console.log(`${index + 1}. ${item}`);\n    });\n}\n\n// Call the function with the grocery list\nprintGroceryList(groceryList);\n```\n\n### Explanation:\n\n1. **Array Definition:** We first define a constant array named `groceryList` that contains our list of grocery items.\n2. **Function Definition:** We then define a function `printGroceryList` that takes an array as an argument.\n3. **Printing Items:** Inside the function, we use `console.log` to print \"Grocery List:\" as a header. We then use the `forEach` method to iterate over each item in the array, printing each item along with its index (starting from 1 for human-friendly numbering).\n4. **Function Call:** Finally, we call the `printGroceryList` function and pass the `groceryList` array to it.\n\nWhen you run this JavaScript code, it will print out each item in the grocery list, formatted nicely with numbers."
-
-    "\n\n### Grocery List:\n\n1. Apples\n2. Bananas\n3. Carrots\n4. Donuts\n5. Eggs\n\n### JavaScript Function\n\nHere's a JavaScript function that takes in a grocery list array and prints each item:\n\n```"
-
-    "javascript\n// Define the grocery list array\nconst groceryList = ['Apples', 'Bananas', 'Carrots', 'Donuts', 'Eggs'];\n\n// Function to print each item in the grocery list\nfunction printGroceryList(list) {\n    console.log(\"Grocery List:\");\n    list.forEach((item, index) => {\n        console.log(`${index + 1}. ${item}`);\n    });\n}\n\n// Call the function with the grocery list\nprintGroceryList(groceryList);\n```"
-
-
-    // Function to process text content
     const processText = (text) => {
-        // Format lists
-        // text = text.replace(listPattern, (match, p1) => {
-        //     const listItem = p1.trim();
-        //     const isNumberedList = /^\d+\.\s/.test(listItem);
-        //     const listType = isNumberedList ? 'ol' : 'ul';
-        //     const itemContent = listItem.replace(/^\d+\.\s|-\s/, '');
-        //     if (isNumberedList) {
-        //         return `<${listType}><li>${listCounter++}. ${itemContent}</li>`;
-        //     }
-        //     return `<${listType}><li>${itemContent}</li>`;
-        // });
 
         // Format bold
         text = text.replace(boldPattern, '<strong>$1</strong>');
@@ -238,31 +213,6 @@ const formatMessage4 = (content) => {
 };
 
 
-// function formatMessage(text) {
-//     // Define regex patterns for lists and code blocks
-//     const listPattern = /(?:^|\n)(\d+\.\s.*|[-*]\s.*)/g;
-//     const codeBlockPattern = /```([a-z]*)\n([\s\S]*?)```/g;
-
-//     // Format code blocks with syntax highlighting
-//     text = text.replace(codeBlockPattern, (match, language, code) => {
-//         // const highlightedCode = hljs.highlight(language, code).value;
-//         console.log(code)
-//         return `<pre><div class="code-block-header"><span>${language}</span><button class="copy-btn">Copy code</button></div><div class="code-block-body"><code class="language-${language}">${code}</code></div></pre>`;
-//     });
-
-//     // Format lists
-//     text = text.replace(listPattern, (match, p1) => {
-//         const listItem = p1.trim();
-//         const isNumberedList = /^\d+\.\s/.test(listItem);
-//         const listType = isNumberedList ? 'ol' : 'ul';
-//         return `<${listType}><li>${listItem}</li></${listType}>`;
-//     });
-
-//     // Handle new lines
-//     text = text.replace(/\n/g, '<br>');
-
-//     return text;
-// }
 
 const submitData = async () => {
     if (!userInput.value.trim()) {

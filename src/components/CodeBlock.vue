@@ -1,9 +1,48 @@
 <script setup>
+// import 'highlight.js/styles/night-owl.css';
+// import javascript from 'highlight.js/lib/languages/javascript';
+// import html from 'highlight.js/lib/languages/xml';
+// import python from 'highlight.js/lib/languages/python';
+// import css from 'highlight.js/lib/languages/css';
+// import plainText from 'highlight.js/lib/languages/plaintext';
+
+// import { onMounted, ref } from 'vue';
+// import hljs from 'highlight.js/lib/core';
+// hljs.registerLanguage('javascript', javascript);
+// hljs.registerLanguage('html', html);
+// hljs.registerLanguage('python', python);
+// hljs.registerLanguage('css', css);
+// hljs.registerLanguage('plaintext', plainText);
+
+// const knownLanguages = ['javascript', 'html', 'python', 'css', 'plaintext'];
+
+// const props = defineProps({
+//     code: {
+//         type: String,
+//         required: true
+//     },
+//     language: {
+//         type: String,
+//         default: 'plaintext',
+//     }
+// });
 import 'highlight.js/styles/night-owl.css';
-import javascript from 'highlight.js/lib/languages/javascript';
-import { onMounted, ref } from 'vue';
 import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import xml from 'highlight.js/lib/languages/xml';
+import python from 'highlight.js/lib/languages/python';
+import css from 'highlight.js/lib/languages/css';
+import plaintext from 'highlight.js/lib/languages/plaintext';
+
+import { onMounted, ref } from 'vue';
+
+hljs.registerLanguage('html', xml);
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('plaintext', plaintext);
 hljs.registerLanguage('javascript', javascript);
+
+const knownLanguages = ['javascript', 'html', 'python', 'css', 'plaintext'];
 
 const props = defineProps({
     code: {
@@ -12,12 +51,17 @@ const props = defineProps({
     },
     language: {
         type: String,
-        default: 'plaintext'
+        default: 'plaintext',
+        validator(value) {
+            return ['javascript', 'html', 'python', 'css', 'plaintext'].includes(value)
+        } 
     }
 });
 
 const copySuccess = ref(false);
 const codeRef = ref(null);
+
+const validatedLanguage = knownLanguages.includes(props.language) ? props.language : 'plaintext';
 
 const copyCode = () => {
     console.log('copying code');
@@ -34,6 +78,8 @@ const copyCode = () => {
 onMounted(() => {
     if (codeRef.value) {
         hljs.highlightElement(codeRef.value);
+
+
     }
 });
 </script>
@@ -48,7 +94,7 @@ onMounted(() => {
             </button>
         </div>
         <pre class="overflow-x-auto whitespace-normal rounded-bl-md rounded-br-md">
-            <code ref="codeRef" :class="`language-${language}`" class="text-white whitespace-pre-wrap">{{ code }}</code>
+            <code ref="codeRef" :class="`language-${validatedLanguage}`" class="text-white whitespace-pre-wrap">{{ code }}</code>
         </pre>
     </div>
 </template>
