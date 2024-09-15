@@ -23,7 +23,6 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { beautify } from 'js-beautify';
 // import { ChevronUpDown, Check } from 'lucide-vue-next'; 
 interface Option { id: number; name: string; }
 const props = defineProps<{ options: Option[] }>();

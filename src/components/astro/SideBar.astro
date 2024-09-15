@@ -1,5 +1,6 @@
 ---
 export const prerender = false;
+import ConversationList from '../vue/ConversationList.vue';
 const navItems = [{ name: 'Home', href: '/' }];
 
 // You would typically get this from your auth service
@@ -7,12 +8,13 @@ const isLoggedIn = false;
 // get sessions from api endpoint
 const sessions = [];
 const baseURL = new URL(Astro.request.url).origin;
-const response = await fetch(`${baseURL}/api/session/get`);
-const data = await response.json();
+// const response = await fetch(`${baseURL}/api/session/get`);
+// const data = await response.json();
+// console.log(data);
+const message = 'Astro is awesome!';
 ---
 
 <nav class="bg-white shadow-lg">
-  <!-- an item for each nav item -->
   {
     navItems.map((item) => (
       <a href class="block px-4 py-2 text-gray-800 hover:bg-gray-100" href={item.href}>
@@ -22,7 +24,7 @@ const data = await response.json();
   }
 
   <div>sidebar</div>
-  <div>{data.message}</div>
+  <ConversationList baseURL={baseURL} client:only="vue" />
 </nav>
 
-<script></script>
+<script define:vars={{ baseURL }}></script>

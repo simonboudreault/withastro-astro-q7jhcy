@@ -11,7 +11,10 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   if (!email || !password) {
     return new Response('Email and password are required', { status: 400 });
   }
-
+console.log({
+  email,
+  password,
+});
   const { error } = await supabase.auth.signUp({
     email,
     password,

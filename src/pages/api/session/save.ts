@@ -3,14 +3,29 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 
-export const GET: APIRoute = async ({ request, cookies, redirect }) => {
-  // get id from request body
-  // const res = await supabase.from('sessions').select('*');
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   let { data: sessions, error } = await supabase.from('sessions').select('*');
 
-  console.log('res', sessions);
+  async function saveRow(table: string, rowData: Record<string, any>) {
+    try {
+      const { data, error } = await supabase.from(table).insert([rowData]);
 
-  return new Response(JSON.stringify({ message: 'got sessions', data: sessions }), { status: 200 });
+      if (error) {
+        console.error('Error inserting data:', error);
+        return { success: false, error };
+      }
+
+      console.log('Data inserted successfully:', data);
+      return { success: true, data };
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      return { success: false, error };
+    }
+  }
+  const data = await request.json();
+  console.log('data', data);
+
+  return new Response(JSON.stringify({ message: 'saved sessions', data: '123' }), { status: 200 });
   // const formData = await request.formData();
   // const email = formData.get('email')?.toString();
   // const password = formData.get('password')?.toString();
@@ -41,6 +56,4 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   //   secure: import.meta.env.PROD,
   //   sameSite: 'strict',
   //   maxAge: 60 * 60 * 24 * 7, // 1 week
-  // });
-  // return redirect('/dashboard');
 };

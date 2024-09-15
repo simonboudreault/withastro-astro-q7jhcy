@@ -1,14 +1,27 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Section from '../components/Section.astro';
-import VueComponent from '../components/VueComponent.vue';
-import SvgWrapper from '../components/SvgWrapper.vue';
+import Section from '../components/astro/Section.astro';
+import VueComponent from '../components/vue/VueComponent.vue';
+import SvgWrapper from '../components/vue/SvgWrapper.vue';
 ---
 
 <Layout title="Welcome to Astro.">
   <main>
-    <VueComponent client:only="vue" />
-    <Section bg="bg-orange-50" text="it Simple.">
+    <!-- <VueComponent client:only="vue" /> -->
+    <Section bg="bg-red-500" text="">
+      <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Important Reminders:</h2>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li class="text-gray-700">Don't forget to un-pause the Supabase project</li>
+          <li class="text-gray-700">
+            Don't forget to set <code class="bg-gray-200 px-1 rounded">client:only="vue"</code> while
+            calling your Vue components
+          </li>
+          <li class="text-gray-700">Astro components are not reactive, use Vue ones</li>
+        </ol>
+      </div>
+    </Section>
+    <!-- <Section bg="bg-orange-50" text="it Simple.">
       <div>
         <SvgWrapper client:only="vue" numOfSvgs={6} />
       </div>
@@ -17,7 +30,7 @@ import SvgWrapper from '../components/SvgWrapper.vue';
       <div>
         <SvgWrapper client:only="vue" numOfSvgs={6} />
       </div>
-    </Section>
+    </Section> -->
     <!-- <Section bg="bg-blue-50" text="Contact us" />
     <Section bg="bg-red-50" text="it Simple." />
     <Section bg="bg-teal-50" text="Contact us" />

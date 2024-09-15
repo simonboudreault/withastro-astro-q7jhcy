@@ -1,31 +1,4 @@
 <script setup>
-// import 'highlight.js/styles/night-owl.css';
-// import javascript from 'highlight.js/lib/languages/javascript';
-// import html from 'highlight.js/lib/languages/xml';
-// import python from 'highlight.js/lib/languages/python';
-// import css from 'highlight.js/lib/languages/css';
-// import plainText from 'highlight.js/lib/languages/plaintext';
-
-// import { onMounted, ref } from 'vue';
-// import hljs from 'highlight.js/lib/core';
-// hljs.registerLanguage('javascript', javascript);
-// hljs.registerLanguage('html', html);
-// hljs.registerLanguage('python', python);
-// hljs.registerLanguage('css', css);
-// hljs.registerLanguage('plaintext', plainText);
-
-// const knownLanguages = ['javascript', 'html', 'python', 'css', 'plaintext'];
-
-// const props = defineProps({
-//     code: {
-//         type: String,
-//         required: true
-//     },
-//     language: {
-//         type: String,
-//         default: 'plaintext',
-//     }
-// });
 import 'highlight.js/styles/night-owl.css';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
