@@ -66,7 +66,7 @@ import { ref, computed } from 'vue';
 import CodeBlock from './CodeBlock.vue';
 import SelectBox from './SelectBox.vue';
 import { useStore } from '@nanostores/vue'
-import { $sessions, setSessions, $currentSession } from '../../store/session'
+import { $sessions, setSessions, $currentSession, addMessageToCurrentSession } from '../../store/session'
 
 const greeting = 'AI Chat Interface';
 const userInput = ref('');
@@ -77,7 +77,7 @@ const isLoading = ref(false);
 // const convo = useStore($currentSession) || 'nothig';
 // const conversation = ref(convo.value.conversation || []);
 const session = useStore($currentSession)
-const conversation = session.conversation || [];
+// const conversation = ref(session.conversation || []);
 const open = ref(false);
 const hoveredApi = ref(null);
 const apiOptions = [
@@ -170,12 +170,9 @@ const selectedContext = ref();
 const addContext = (content) => {
     content = `${selectedContext.value}\n${content}`;
     console.log(content);
-    conversation.value.push({ role: 'assistant', content: [{ type: 'text', content }] });
+    const newMessage = { role: 'assistant', content };
+    addMessageToCurrentSession(newMessage);
 
-};
-
-const setConversation = (data) => {
-    conversation.value = data;
 };
 
 const submitData = async () => {
@@ -191,9 +188,13 @@ const submitData = async () => {
     error.value = '';
     isLoading.value = true;
     const context = ''
-    const content = `${context}\n${userInput.value}`;
+    // const content = `${context}\n${userInput.value}`;
+    const content = `${userInput.value}`;
 
-    conversation.value.push({ role: 'user', content: [{ type: 'text', content }] });
+    const newMessage = { role: 'user', content: [{ type: 'text', content }] };
+    addMessageToCurrentSession(newMessage);
+    // conversation.value.push({ role: 'user', content: [{ type: 'text', content }] });
+    console.log('session', $currentSession.get()); 
 
     try {
         const res = await fetch(currentApiEndpoint.value, {
@@ -202,7 +203,7 @@ const submitData = async () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                messages: conversation.value.map(msg => ({
+                messages: $currentSession.get().conversation.map(msg => ({
                     role: msg.role,
                     content: msg.content.map(part => part.content).join('\n')
                 }))
@@ -215,7 +216,9 @@ const submitData = async () => {
 
         const data = await res.json();
         const formattedContent = formatMessage(data.result);
-        conversation.value.push({ role: 'assistant', content: formattedContent });
+        const newMessage = { role: 'assistant', content: formattedContent };
+        addMessageToCurrentSession(newMessage);
+        // conversation.value.push({ role: 'assistant', content: formattedContent });
         userInput.value = '';
     } catch (err) {
         console.error('Error:', err);

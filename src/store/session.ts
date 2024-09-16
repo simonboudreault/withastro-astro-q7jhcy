@@ -13,26 +13,16 @@ export interface Message {
 }
 
 export interface Session {
-  id: number;
+  id?: number;
   label: string;
   conversation: Message[];
 }
-const newSession: Session = {
-  id: 0,
+const defaultSession: Session = {
+  // id: 0, //  ! should be uniqueand determined by the server
   label: 'New Session',
-  conversation: [
-    {
-      id: 0,
-      role: 'user',
-      content: [
-        {
-          type: 'text',
-          content: 'Hello, I am a user',
-        },
-      ],
-    },
-  ],
+  conversation: [],
 };
+const newSession = { ...defaultSession };
 export const $sessions = atom<Session[]>([newSession]);
 export const $currentSession = atom<Session | null>($sessions.get()[0]); // todo create a new session on load
 
@@ -49,34 +39,28 @@ export function setCurrentSession(session: Session) {
 export function setSessions(sessions: Session[]) {
   $sessions.set(sessions);
 }
-// export function addMessage(sessionId: number, message: Message) {
-//   const session = $sessions.get().find((s) => s.id === sessionId);
-//   if (!session) return;
-//   session.conversation.push(message);
-//   $sessions.set([...$sessions.get()]);
-// }
-// export function addPart(sessionId: number, messageId: number, part: Part) {
-//   const session = $sessions.get().find((s) => s.id === sessionId);
-//   if (!session) return;
-//   const message = session.conversation.find((m) => m.id === messageId);
-//   if (!message) return;
-//   message.content.push(part);
-//   $sessions.set([...$sessions.get()]);
-// }
-// export function removeSession(sessionId: number) {
-//   $sessions.set($sessions.get().filter((s) => s.id !== sessionId));
-// }
-// export function removeMessage(sessionId: number, messageId: number) {
-//   const session = $sessions.get().find((s) => s.id === sessionId);
-//   if (!session) return;
-//   session.conversation = session.conversation.filter((m) => m.id !== messageId);
-//   $sessions.set([...$sessions.get()]);
-// }
-// export function removePart(sessionId: number, messageId: number, partId: number) {
-//   const session = $sessions.get().find((s) => s.id === sessionId);
-//   if (!session) return;
-//   const message = session.conversation.find((m) => m.id === messageId);
-//   if (!message) return;
-//   message.content = message.content.filter((p) => p.id !== partId);
-//   $sessions.set([...$sessions.get()]);
-// }
+async function saveSession(session: Session) {
+  try {
+    const res = await fetch('http://localhost:4321/api/session/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(session),
+    });
+    const data = await res.json();
+    console.log('data', data);
+  } catch (error) {
+    console.error('Unexpected error:', error);
+  }
+}
+export function addMessageToCurrentSession(message: Message) {
+  const session = $currentSession.get();
+  if (session) {
+    session.conversation.push(message);
+    $currentSession.set(session);
+  }
+  saveSession(session);
+
+  // call the api to save the message
+}

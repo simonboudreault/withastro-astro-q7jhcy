@@ -4,7 +4,23 @@ import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+  if (request.headers.get('Content-Type') === 'application/json') {
+    const body = await request.json();
+    const bodyString = JSON.stringify(body);
+    saveRow('sessions', body);
+    return new Response(
+      JSON.stringify({
+        message: 'Your name was: ' + bodyString,
+      }),
+      {
+        status: 200,
+      }
+    );
+  }
+  return new Response(null, { status: 400 });
   let { data: sessions, error } = await supabase.from('sessions').select('*');
+  const theSession = await request.json();
+  console.log('theSession', theSession);
 
   async function saveRow(table: string, rowData: Record<string, any>) {
     try {
@@ -25,7 +41,9 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const data = await request.json();
   console.log('data', data);
 
-  return new Response(JSON.stringify({ message: 'saved sessions', data: '123' }), { status: 200 });
+  return new Response(JSON.stringify({ message: 'saved sessions', data: theSession }), {
+    status: 200,
+  });
   // const formData = await request.formData();
   // const email = formData.get('email')?.toString();
   // const password = formData.get('password')?.toString();
