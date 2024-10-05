@@ -8,6 +8,7 @@ import hljs from 'highlight.js/lib/core';
 // import 'highlight.js/styles/monokai-sublime.css';
 import 'highlight.js/styles/night-owl.css'; // or any other style you prefer
 import javascript from 'highlight.js/lib/languages/javascript';
+import { setUser } from '../store/user';
 
 // Then register the languages you need
 hljs.registerLanguage('javascript', javascript);
@@ -37,6 +38,11 @@ if (error) {
   return redirect('/signin');
 }
 
+setUser({
+  id: data.user?.id,
+  email: data.user?.email,
+});
+
 const email = data.user?.email;
 ---
 
@@ -54,7 +60,7 @@ const email = data.user?.email;
 
       <div class="mt-8 space-y-6">
         <Store client:only="vue" />
-        <ChatComponent client:only="vue" />
+        <ChatComponent client:only="vue" user={data.user} />
 
         <form action="/api/auth/signout" class="mt-6">
           <button

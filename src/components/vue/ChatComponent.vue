@@ -1,14 +1,15 @@
 <template>
     <div class="bg-white shadow sm:rounded-lg -2xl mx-auto mt-10">
         <div>
-            <!-- {{ JSON.stringify(session) }} -->
+            <!-- user : {{ JSON.stringify(user) }} <br>
+            session : {{ JSON.stringify(session) }} -->
         </div>
         <div class="px-4 py-5 sm:p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-900">{{ greeting }}</h2>
             <div class="mb-4">
                 <label id="api-select-label" class="block text-sm font-medium text-gray-700">Select API</label>
                 <div class="mt-1">
-                    <SelectBox :options="apiOptions" :onSelect="selectApi" />
+                    <SelectBox :options="apiOptions" :onSelect="selectApi" :defaultValue="0" />
                 </div>
 
             </div>
@@ -62,11 +63,20 @@
     </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, defineProps } from 'vue';
 import CodeBlock from './CodeBlock.vue';
 import SelectBox from './SelectBox.vue';
 import { useStore } from '@nanostores/vue'
-import { $sessions, setSessions, $currentSession, addMessageToCurrentSession } from '../../store/session'
+import { $currentSession, addMessageToCurrentSession, setSessionUser } from '../../store/session'
+import { $user, setUser } from '../../store/user'
+
+// add props
+const props = defineProps({
+    user: {
+        type: Object,
+        required: true
+    }
+});
 
 const greeting = 'AI Chat Interface';
 const userInput = ref('');
@@ -74,17 +84,24 @@ const error = ref('');
 const isLoading = ref(false);
 
 
-// const convo = useStore($currentSession) || 'nothig';
-// const conversation = ref(convo.value.conversation || []);
 const session = useStore($currentSession)
-// const conversation = ref(session.conversation || []);
+const user = useStore($user)
 const open = ref(false);
-const hoveredApi = ref(null);
 const apiOptions = [
     { name: 'Chat GPT', id: 'openAI' },
     { name: 'Claude', id: 'anthropic' }
 ]
-const selectedApi = ref(apiOptions[1]);
+const selectedApi = ref(apiOptions[0]);
+
+onMounted(() => {
+    // selectApi(apiOptions[1]);
+    // console.log('mounted');
+    // setUser({
+    //     id: props.user.id,
+    //     email: props.user.email,
+    // });
+    // console.log(props.user)
+});
 
 const apiEndpoints = {
     openAI: 'http://localhost:3000/generate',
@@ -93,12 +110,8 @@ const apiEndpoints = {
 
 const currentApiEndpoint = computed(() => apiEndpoints[selectedApi.value.id]);
 
-const toggleDropdown = () => {
-    open.value = !open.value;
-};
-
 const removeMessage = (index) => {
-    conversation.value.splice(index, 1);
+    session.value.conversation.splice(index, 1);
 };
 
 const selectApi = (api) => {
@@ -171,12 +184,12 @@ const addContext = (content) => {
     content = `${selectedContext.value}\n${content}`;
     console.log(content);
     const newMessage = { role: 'assistant', content };
-    addMessageToCurrentSession(newMessage);
+    addMessageToCurrentSession(newMessage, true);
 
 };
 
 const submitData = async () => {
-    if (selectedContext.value && !conversation.value.length) {
+    if (selectedContext.value && !session.conversation.value.length) {
         addContext(userInput.value);
     }
 
@@ -193,8 +206,17 @@ const submitData = async () => {
 
     const newMessage = { role: 'user', content: [{ type: 'text', content }] };
     addMessageToCurrentSession(newMessage);
-    // conversation.value.push({ role: 'user', content: [{ type: 'text', content }] });
-    console.log('session', $currentSession.get()); 
+    // session.conversation.value.push({ role: 'user', content: [{ type: 'text', content }] });
+    setSessionUser(props.user.id);
+
+    const currentSession = $currentSession.get();
+
+    const body = JSON.stringify({
+        messages: currentSession.conversation.map(msg => ({
+            role: msg.role,
+            content: msg.content.map(part => part.content).join('\n')
+        })),
+    })
 
     try {
         const res = await fetch(currentApiEndpoint.value, {
@@ -202,12 +224,7 @@ const submitData = async () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                messages: $currentSession.get().conversation.map(msg => ({
-                    role: msg.role,
-                    content: msg.content.map(part => part.content).join('\n')
-                }))
-            }),
+            body,
         });
 
         if (!res.ok) {

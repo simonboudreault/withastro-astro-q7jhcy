@@ -1,21 +1,22 @@
 <script setup>
 import { useStore } from '@nanostores/vue'
-import { $sessions } from '../../store/session'
+import { $persistentUser, setPersistentUser } from '../../store/user';
 
-// const props = defineProps(['postId'])
 
-const sessions = useStore($sessions)
-function logSessions() {
-    console.log(sessions.value)
+
+const persistentUser = useStore($persistentUser)
+function log() {
+    console.log(persistentUser.value.email)
+    setPersistentUser({ id: 'log id', email: 'new email' })
 }
 </script>
 
 <template>
     <div>
         <h1>STORE !!</h1>
-        <button @click="logSessions">log</button>
-        <div v-for="session in sessions">
-            {{ session.label }}
+        <button @click="log">log</button>
+        <div>
+            {{ persistentUser.email }}
         </div>
     </div>
 </template>

@@ -37,10 +37,12 @@ interface Option {
 
 const props = defineProps<{
     options: Option[],
-    onSelect: Function
+    onSelect: Function,
+    defaultValue?: number
 }>();
+
 const isOpen = ref(false);
-const selectedOption = ref<Option | null>(props.options[0]);
+const selectedOption = ref<Option | null>(props.options[props.defaultValue] || null);
 
 const toggleDropdown = () => {
     isOpen.value = !isOpen.value;
