@@ -6,10 +6,34 @@
         </div>
         <div class="px-4 py-5 sm:p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-900">{{ greeting }}</h2>
+
+            <div>
+                <label for="context-select" class="block text-sm font-medium text-gray-700">Select Context</label>
+                <div class="mt-1">
+                    <div v-for="contextType in contextTypes">
+                        <div class="mb-2">
+                            <label for="context-select" class="block text-sm font-medium text-gray-700">{{
+                                contextType.name }}</label>
+                            <div class="mt-1">
+                                <SelectBox :options="contextType.entries" :onSelect="selectContext" :defaultValue="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="context-input" class="block text-sm font-medium text-gray-700">Context</label>
+                <div class="mt-1">
+                    <input id="context-input" v-model="context" type="text"
+                        class="shadow-sm focus:ring-indigo-500 min-h-10 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                </div>
+            </div>
+
             <div class="mb-4">
                 <label id="api-select-label" class="block text-sm font-medium text-gray-700">Select API</label>
                 <div class="mt-1">
-                    <SelectBox :options="apiOptions" :onSelect="selectApi" :defaultValue="0" />
+                    <SelectBox :options="apiOptions" :onSelect="selectApi" :defaultValue="1" />
                 </div>
 
             </div>
@@ -87,11 +111,12 @@ const isLoading = ref(false);
 const session = useStore($currentSession)
 const user = useStore($user)
 const open = ref(false);
+const context = ref('')
 const apiOptions = [
     { name: 'Chat GPT', id: 'openAI' },
     { name: 'Claude', id: 'anthropic' }
 ]
-const selectedApi = ref(apiOptions[0]);
+const selectedApi = ref(apiOptions[1]);
 
 onMounted(() => {
     // selectApi(apiOptions[1]);
@@ -105,7 +130,7 @@ onMounted(() => {
 
 const apiEndpoints = {
     openAI: 'http://localhost:3000/generate',
-    anthropic: 'http://localhost:3000/anthropic'
+    anthropic: 'api/ai/completion'
 };
 
 const currentApiEndpoint = computed(() => apiEndpoints[selectedApi.value.id]);
@@ -165,38 +190,74 @@ const formatMessage = (content) => {
     return parts;
 };
 
-const contexts = [
+const contextTypes = ref([
     {
-        id: '1',
-        name: 'Context 1',
-        content: 'you are a code assistant, you write quality code, everything you write is seperated in simple, single responsabillity, pure functions'
+        name: 'code assistant',
+        entries: [
+            {
+                id: 1,
+                name: 'Context 1',
+                content: 'you are a code assistant, you write quality code, everything you write is seperated in simple, single responsabillity, pure functions'
+            },
+            {
+                id: 2,
+                name: 'Context 2',
+                content: 'you are a code assistant, you write quality code, everything you write is seperated in simple, single responsabillity, pure functions'
+            },
+        ]
     },
     {
-        id: '2',
-        name: 'Context 2',
-        content: 'you are a code assistant, you write quality code, everything you write is seperated in simple, single responsabillity, pure functions'
-    },
-]
+        name: 'dnd assistant',
+        entries: [
+            {
+                id: 1,
+                name: 'Builds',
+                content: 'you are a dungeons and dragons (dnd) expert 5th edition (5e). You help me create character builds that are fun to play and powerful. Explain the race, the levels the choices, the skills.'
+            },
+            {
+                id: 2,
+                name: 'Plots',
+                content: 'you are a dungeons and dragons (dnd) expert 5th edition (5e). You are an exceptionnal writer and create very relatable, complex, human and emotionnal plots with interesting storypoints and twists. create a resume of a plot for the backstory af a character. start from the following description : '
+            }, {
+                id: 3,
+                name: 'Background writing',
+                content: 'you are a great story writer in the likes of george r.r. martin, Tolkien and lovecraft. I want you to write a background story using an engaging style, told from the character at the first person, applying the following plot :'
+            },
+            {
+
+            }
+
+        ]
+    }
+])
 
 const selectedContext = ref();
 
-const addContext = (content) => {
-    content = `${selectedContext.value}\n${content}`;
-    console.log(content);
-    const newMessage = { role: 'assistant', content };
+const addContext = (userInput) => {
+    if ((/*!selectedContext.value && */ !context.value) || session.value.conversation.length !== 0) {
+        return;
+    }
+    // const updatedInput  = `${context.value}\n${userInput.value}`;
+    // console.log(updatedInput);
+    console.log(context.value);
+    const newMessage = { role: 'assistant', content: [{ type: 'text', content: context.value }] };
     addMessageToCurrentSession(newMessage, true);
 
 };
 
+const selectContext = contextEntry => {
+    // selectedContext.value = context;
+    console.log('selecting context', contextEntry);
+    context.value = contextEntry.content;
+}
+
 const submitData = async () => {
-    if (selectedContext.value && !session.conversation.value.length) {
-        addContext(userInput.value);
-    }
 
     if (!userInput.value.trim()) {
         error.value = 'Please enter a prompt before submitting.';
         return;
     }
+    const inputWithContext = addContext(userInput);
 
     error.value = '';
     isLoading.value = true;
@@ -223,7 +284,7 @@ const submitData = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
+                // 'Access-Control-Allow-Origin': '*',
             },
             body,
         });
