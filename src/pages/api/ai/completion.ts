@@ -11,6 +11,8 @@ const anthropic = new Anthropic({
 });
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+    const subs = apiKey.toString().substring(0, 5);
+    console.log('ai/completion', subs);
   const sessionResponse = await supabase.auth.getSession();
   const user = sessionResponse?.data?.session?.user;
   console.log('user', user);
