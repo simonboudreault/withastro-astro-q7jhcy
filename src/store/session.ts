@@ -73,7 +73,7 @@ function updateSession(session: Session) {
 }
 async function saveSession(session: Session) {
   try {
-    const res = await fetch('http://localhost:4321/api/session/upsert', {
+    const res = await fetch('/api/session/save', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

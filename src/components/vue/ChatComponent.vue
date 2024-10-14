@@ -25,8 +25,9 @@
             <div class="mb-4">
                 <label for="context-input" class="block text-sm font-medium text-gray-700">Context</label>
                 <div class="mt-1">
-                    <input id="context-input" v-model="context" type="text"
-                        class="shadow-sm focus:ring-indigo-500 min-h-10 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" />
+                    <textarea id="context-input" v-model="context"
+                        class="peer h-full min-h-[100px] w-full resize-none rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:resize-none disabled:border-0 disabled:bg-blue-gray-50"
+                        placeholder=" ">  </textarea>
                 </div>
             </div>
 
@@ -217,7 +218,7 @@ const contextTypes = ref([
             {
                 id: 2,
                 name: 'Plots',
-                content: 'you are a dungeons and dragons (dnd) expert 5th edition (5e). You are an exceptionnal writer and create very relatable, complex, human and emotionnal plots with interesting storypoints and twists. create a resume of a plot for the backstory af a character. start from the following description : '
+                content: 'you are a dungeons and dragons (dnd) expert 5th edition (5e). You are an exceptionnal writer and create very relatable, complex, human and emotionnal plots with interesting storypoints and twists. create a resume of a plot for the backstory af a character. You must be very succint, only writing the bare minimum to capture ideas, almost as a list. start from the following description : '
             }, {
                 id: 3,
                 name: 'Background writing',

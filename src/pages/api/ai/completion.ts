@@ -1,18 +1,10 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
-import Anthropic from '@anthropic-ai/sdk';
+import { useAnthropicApi } from '../../../lib/ai';
 // Initialize the Supabase client
 
-const apiKey = import.meta.env.ANTHROPIC_KEY;
-
-const anthropic = new Anthropic({
-  apiKey,
-});
-
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
-    const subs = apiKey.toString().substring(0, 5);
-    console.log('ai/completion', subs);
   const sessionResponse = await supabase.auth.getSession();
   const user = sessionResponse?.data?.session?.user;
   console.log('user', user);
@@ -43,26 +35,3 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   // let { data: sessions, error } = await supabase.from('sessions').select('*');
 };
-
-async function useAnthropicApi(messages) {
-  const completion = await anthropic.messages.create({
-    model: 'claude-3-5-sonnet-20240620',
-    max_tokens: 4096,
-    temperature: 0,
-    // system: 'Respond only with short poems.',
-    messages,
-  });
-  // const msg = await anthropic.messages.create({
-  //   // model: 'claude-3-opus-20240229',
-  //   model: 'claude-3-sonnet-20240229',
-  //   max_tokens: 1024,
-  //   messages:
-  //     // [{ role: 'user', content: text }],
-  //     [
-  //       { role: 'user', content: "What's the Greek name for Sun? (A) Sol (B) Helios (C) Sun" },
-  //       { role: 'assistant', content: 'The best answer is (' },
-  //     ],
-  // });
-  const contentBlock = completion.content[0] as any;
-  return { result: contentBlock.text };
-}

@@ -2,8 +2,16 @@
 const foregroundColor = 'rgb(221 243 228)';
 const backgroundColor = 'rgb(24 121 78)';
 const message = 'Astro is awesome!';
+import TestVue from '../components/vue/TestVue.vue';
+import Layout from '../layouts/Layout.astro';
 ---
 
+<Layout title="test">
+  <div>
+    <h1>Hello, Astro!</h1>
+    <TestVue client:only="vue" />
+  </div>
+</Layout>
 <style define:vars={{ textColor: foregroundColor, backgroundColor }}>
   h1 {
     background-color: var(--backgroundColor);
@@ -12,5 +20,14 @@ const message = 'Astro is awesome!';
 </style>
 
 <script define:vars={{ message }}>
-  alert(message);
+  // alert(message);
+
+  function alertMessage() {
+    alert(message);
+  }
+
+  async function logUser() {
+    const user = await getSupabaseUser();
+    alert(user);
+  }
 </script>
