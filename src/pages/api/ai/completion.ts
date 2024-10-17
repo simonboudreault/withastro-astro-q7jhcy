@@ -7,6 +7,10 @@ import { useAnthropicApi } from '../../../lib/ai';
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const sessionResponse = await supabase.auth.getSession();
   const user = sessionResponse?.data?.session?.user;
+  if (!user) {
+    console.log('Unauthorized');
+    return new Response('Unauthorized', { status: 401 });
+  }
   console.log('user', user);
   // if (user.id !== '58dbfc9a-ad5d-46cc-9ccd-9efbd3b63ff') {
   if (user.id !== '58dbfc9a-ad5d-46cc-9ccd-9efbd3b63fff') {
