@@ -5,9 +5,12 @@ import { useAnthropicApi } from '../../../lib/ai';
 // Initialize the Supabase client
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
-  const sessionResponse = await supabase.auth.getSession();
-  const user = sessionResponse?.data?.session?.user;
-  console.log(sessionResponse);
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    console.error('Error getting session:', error);
+    throw new Error(error.message);
+  }
+  const user = data.session?.user;
   if (!user) {
     console.log('Unauthorized');
     throw new Error('No user');
