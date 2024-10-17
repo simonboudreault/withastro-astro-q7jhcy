@@ -8,18 +8,18 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const { data, error } = await supabase.auth.getSession();
   if (error) {
     console.error('Error getting session:', error);
-    throw new Error(error.message);
+    return new Response(error.message, { status: 401 });
   }
   const user = data.session?.user;
   if (!user) {
     console.log('Unauthorized');
-    throw new Error('No user');
+    return new Response(error.message, { status: 401 });
   }
   console.log('user', user);
   // if (user.id !== '58dbfc9a-ad5d-46cc-9ccd-9efbd3b63ff') {
   if (user.id !== '58dbfc9a-ad5d-46cc-9ccd-9efbd3b63fff') {
     console.log('Unauthorized');
-    throw new Error('User Unauthorized');
+    return new Response('user not authorized', { status: 401 });
   }
   console.log('Authorized');
 
