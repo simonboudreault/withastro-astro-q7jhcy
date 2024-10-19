@@ -272,7 +272,10 @@ const submitData = async () => {
     setSessionUser(props.user.id);
 
     const currentSession = $currentSession.get();
+    console.log('submit data');
+    console.log(currentSession);
 
+    // ! quand je load la session, la conversation content est pas splitté en parts
     const body = JSON.stringify({
         messages: currentSession.conversation.map(msg => ({
             role: msg.role,

@@ -13,27 +13,13 @@ import { ref } from 'vue';
 import { useStore } from '@nanostores/vue'
 import { $sessions, setSessions, setCurrentSession } from '../../store/session'
 
-// const props = defineProps(['postId'])
-
 const sessions = useStore($sessions)
-const props = defineProps({
-  baseURL: {
-    type: String,
-    required: true
-  }
-});
 
-// const baseURL = 'http://localhost:3000';
 const conversations = ref(sessions);
 
-function log() {
-  console.log('log');
-}
-
 async function fetchData() {
-  console.log('fetch data');
   try {
-    const response = await fetch(`${props.baseURL}/api/session/get`);
+    const response = await fetch(`/api/session/get`);
     const data = await response.json();
     console.log(data);
 

@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const user = data.session?.user;
   if (!user) {
     console.log('Unauthorized');
-    return new Response(error.message, { status: 401 });
+    return new Response('not logged in', { status: 401 });
   }
   console.log('user', user);
   // if (user.id !== '58dbfc9a-ad5d-46cc-9ccd-9efbd3b63ff') {
